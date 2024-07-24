@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaEdit, FaSearch, FaPlusCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-const AddCategory = () => {
+const ManageCategories = () => {
   const [categories, setCategories] = useState([
     { name: 'Category 1', isActive: true },
     { name: 'Category 2', isActive: false },
@@ -14,11 +14,9 @@ const AddCategory = () => {
   const [name, setName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
   const [currentPage, setCurrentPage] = useState(1);
-  const [dropdownValue, setDropdownValue] = useState('5');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [categoryToToggle, setCategoryToToggle] = useState(null);
+  const [dropdownValue, setDropdownValue] = useState('5'); // For dropdown display
 
   const handleAddCategory = () => {
     if (name) {
@@ -44,24 +42,18 @@ const AddCategory = () => {
     }
   };
 
-  const handleToggleActive = (category) => {
-    setModalVisible(true);
-    setCategoryToToggle(category);
-  };
-
-  const confirmToggleActive = () => {
-    const updatedCategories = categories.map(category =>
-      category.name === categoryToToggle.name ? { ...category, isActive: !category.isActive } : category
+  const handleToggleActive = (index) => {
+    const updatedCategories = categories.map((category, i) =>
+      i === index ? { ...category, isActive: !category.isActive } : category
     );
     setCategories(updatedCategories);
-    setModalVisible(false);
-    setCategoryToToggle(null);
   };
 
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination calculations
   const totalItems = filteredCategories.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const paginatedCategories = filteredCategories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -70,13 +62,14 @@ const AddCategory = () => {
     const newItemsPerPage = Number(e.target.value);
     setItemsPerPage(newItemsPerPage);
     setDropdownValue(e.target.value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page
   };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Add Categories</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Manage Categories</h2>
 
+      {/* Add Category Form */}
       <div className="mb-6 p-6 bg-blue-50 rounded-lg shadow-md">
         <h3 className="text-2xl mb-4 text-gray-700">Add New Category</h3>
         <div className="flex flex-col md:flex-row gap-4">
@@ -102,8 +95,9 @@ const AddCategory = () => {
         </div>
       </div>
 
+      {/* Search and Show Options */}
       <div className="mb-6 flex items-center gap-4">
-        <div className="relative flex">
+        <div className="flex items-center">
           <div className="relative flex">
             <button className="flex items-center p-3 bg-blue-600 text-white rounded-l-lg shadow-md">
               Show
@@ -132,6 +126,7 @@ const AddCategory = () => {
         </div>
       </div>
 
+      {/* Categories Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white rounded-lg shadow-md border border-gray-200">
           <thead className="bg-blue-200">
@@ -155,8 +150,8 @@ const AddCategory = () => {
                   />
                   <button
                     className={`p-2 rounded-lg text-white ${category.isActive ? 'bg-green-500' : 'bg-red-500'}`}
-                    onClick={() => handleToggleActive(category)}
-                    style={{ width: '100px' }}
+                    onClick={() => handleToggleActive(index)}
+                    style={{ width: '100px' }} // Ensures consistent width for both buttons
                   >
                     {category.isActive ? 'Activate' : 'Deactivate'}
                   </button>
@@ -167,62 +162,28 @@ const AddCategory = () => {
         </table>
       </div>
 
-      <div className="mt-6 flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
-            disabled={currentPage === 1}
-          >
-            <FaArrowLeft className="text-white" />
-            <span className="ml-2">Previous</span>
-          </button>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
-            disabled={currentPage === totalPages}
-          >
-            <FaArrowRight className="text-white" />
-            <span className="ml-2">Next</span>
-          </button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-600">Page {currentPage} of {totalPages}</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          {/* <button
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md"
-            disabled={currentPage === totalPages}
-          >
-            Show {dropdownValue}
-          </button> */}
-        </div>
+      {/* Pagination Controls */}
+      <div className="mt-6 flex items-center justify-between">
+        <button
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
+          disabled={currentPage === 1}
+        >
+          <FaArrowLeft className="text-white" />
+        </button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
+          disabled={currentPage === totalPages}
+        >
+          <FaArrowRight className="text-white" />
+        </button>
       </div>
-
-      {modalVisible && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
-            <h3 className="text-xl mb-4">Confirm Toggle Status</h3>
-            <p>Are you sure you want to {categoryToToggle.isActive ? 'deactivate' : 'activate'} the category "{categoryToToggle.name}"?</p>
-            <div className="mt-4 flex justify-end gap-4">
-              <button
-                onClick={confirmToggleActive}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => setModalVisible(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default AddCategory;
+export default ManageCategories;

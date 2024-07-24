@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaEdit, FaSearch, FaPlusCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-const AddDepartment = () => {
+const ManageDepartments = () => {
   const [departments, setDepartments] = useState([
     { name: 'Department 1', branch: 'Branch A', isActive: true },
     { name: 'Department 2', branch: 'Branch B', isActive: false },
@@ -15,11 +15,9 @@ const AddDepartment = () => {
   const [branch, setBranch] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
   const [currentPage, setCurrentPage] = useState(1);
-  const [dropdownValue, setDropdownValue] = useState('5');
-  const [modalVisible, setModalVisible] = useState(false);
-  const [departmentToToggle, setDepartmentToToggle] = useState(null);
+  const [dropdownValue, setDropdownValue] = useState('5'); // For dropdown display
 
   const handleAddDepartment = () => {
     if (name && branch) {
@@ -49,17 +47,10 @@ const AddDepartment = () => {
   };
 
   const handleToggleActive = (index) => {
-    setModalVisible(true);
-    setDepartmentToToggle(departments[index]);
-  };
-
-  const confirmToggleActive = () => {
-    const updatedDepartments = departments.map(department =>
-      department.name === departmentToToggle.name ? { ...department, isActive: !department.isActive } : department
+    const updatedDepartments = departments.map((department, i) =>
+      i === index ? { ...department, isActive: !department.isActive } : department
     );
     setDepartments(updatedDepartments);
-    setModalVisible(false);
-    setDepartmentToToggle(null);
   };
 
   const filteredDepartments = departments.filter(department =>
@@ -67,6 +58,7 @@ const AddDepartment = () => {
     department.branch.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Pagination calculations
   const totalItems = filteredDepartments.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const paginatedDepartments = filteredDepartments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -75,12 +67,12 @@ const AddDepartment = () => {
     const newItemsPerPage = Number(e.target.value);
     setItemsPerPage(newItemsPerPage);
     setDropdownValue(e.target.value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page
   };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Add Departments</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Manage Departments</h2>
 
       {/* Add Department Form */}
       <div className="mb-6 p-6 bg-blue-50 rounded-lg shadow-md">
@@ -164,7 +156,7 @@ const AddDepartment = () => {
                 <td className="py-3 px-4 text-gray-700">{(currentPage - 1) * itemsPerPage + index + 1}</td>
                 <td className="py-3 px-4 text-gray-700">{department.name}</td>
                 <td className="py-3 px-4 text-gray-700">{department.branch}</td>
-                <td className="py-3 px-4 text-gray-700">{department.isActive ? 'Active' : 'Inactive'}</td>
+                <td className="py-3 px-4 text-gray-700">{department.isActive ? 'Active' : 'Deactive'}</td>
                 <td className="py-3 px-4 text-center flex items-center justify-center space-x-2">
                   <FaEdit
                     className="text-blue-500 cursor-pointer text-lg"
@@ -172,10 +164,10 @@ const AddDepartment = () => {
                   />
                   <button
                     className={`p-2 rounded-lg text-white ${department.isActive ? 'bg-green-500' : 'bg-red-500'}`}
-                    onClick={() => handleToggleActive(departments.indexOf(department))}
-                    style={{ width: '100px' }}
+                    onClick={() => handleToggleActive(index)}
+                    style={{ width: '100px' }} // Ensures consistent width for both buttons
                   >
-                    {department.isActive ? 'Activate' : 'Deactivate'}
+                    {department.isActive ? 'Activate' : 'Dectivate'}
                   </button>
                 </td>
               </tr>
@@ -185,65 +177,27 @@ const AddDepartment = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
-            disabled={currentPage === 1}
-          >
-            <FaArrowLeft className="text-white" />
-            <span className="ml-2">Previous</span>
-          </button>
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
-            disabled={currentPage === totalPages}
-          >
-            <FaArrowRight className="text-white" />
-            <span className="ml-2">Next</span>
-          </button>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-gray-600">Page {currentPage} of {totalPages}</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          {/* <button
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md"
-            disabled={currentPage === totalPages}
-          >
-            Show {dropdownValue}
-          </button> */}
-        </div>
+      <div className="mt-6 flex items-center justify-between">
+        <button
+          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
+          disabled={currentPage === 1}
+        >
+          <FaArrowLeft className="text-white" />
+        </button>
+        <span className="text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+          className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
+          disabled={currentPage === totalPages}
+        >
+          <FaArrowRight className="text-white" />
+        </button>
       </div>
-
-      {/* Confirmation Modal */}
-      {modalVisible && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-md w-1/3">
-            <h3 className="text-xl mb-4 text-gray-700">Confirm Status Change</h3>
-            <p className="mb-4 text-gray-600">
-              Are you sure you want to {departmentToToggle?.isActive ? 'deactivate' : 'activate'} the department "{departmentToToggle?.name}"?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={confirmToggleActive}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={() => setModalVisible(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
-export default AddDepartment;
+export default ManageDepartments;

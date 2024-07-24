@@ -1,70 +1,77 @@
 import React, { useState } from 'react';
 import { FaEdit, FaSearch, FaPlusCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-const AddCategory = () => {
-  const [categories, setCategories] = useState([
-    { name: 'Category 1', isActive: true },
-    { name: 'Category 2', isActive: false },
-    { name: 'Category 3', isActive: true },
-    { name: 'Category 4', isActive: false },
-    { name: 'Category 5', isActive: true },
-    // Add more data for pagination example
+const ManageBranch = () => {
+  const [branches, setBranches] = useState([
+    { id: 1, branchName: 'Main Branch', address: '123 Main St', isActive: true },
+    { id: 2, branchName: 'Secondary Branch', address: '456 Elm St', isActive: false },
+    { id: 3, branchName: 'East Branch', address: '789 Oak St', isActive: true },
+    { id: 4, branchName: 'West Branch', address: '101 Pine St', isActive: false },
+    { id: 5, branchName: 'North Branch', address: '202 Maple St', isActive: true },
+    { id: 6, branchName: 'South Branch', address: '303 Cedar St', isActive: true },
+    { id: 7, branchName: 'Central Branch', address: '404 Birch St', isActive: false },
+    // Add more items for testing pagination
   ]);
 
-  const [name, setName] = useState('');
+  const [branchName, setBranchName] = useState('');
+  const [address, setAddress] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [dropdownValue, setDropdownValue] = useState('5');
   const [modalVisible, setModalVisible] = useState(false);
-  const [categoryToToggle, setCategoryToToggle] = useState(null);
+  const [branchToToggle, setBranchToToggle] = useState(null);
 
-  const handleAddCategory = () => {
-    if (name) {
-      const newCategory = { name, isActive: true };
-      setCategories([...categories, newCategory]);
-      setName('');
+  const handleAddBranch = () => {
+    if (branchName && address) {
+      const newBranch = { id: Date.now(), branchName, address, isActive: true };
+      setBranches([...branches, newBranch]);
+      setBranchName('');
+      setAddress('');
     }
   };
 
-  const handleEditCategory = (index) => {
+  const handleEditBranch = (index) => {
     setEditingIndex(index);
-    setName(categories[index].name);
+    setBranchName(branches[index].branchName);
+    setAddress(branches[index].address);
   };
 
   const handleSaveEdit = () => {
-    if (name) {
-      const updatedCategories = categories.map((category, index) =>
-        index === editingIndex ? { ...category, name } : category
+    if (branchName && address) {
+      const updatedBranches = branches.map((branch, index) =>
+        index === editingIndex ? { ...branch, branchName, address } : branch
       );
-      setCategories(updatedCategories);
-      setName('');
+      setBranches(updatedBranches);
+      setBranchName('');
+      setAddress('');
       setEditingIndex(null);
     }
   };
 
-  const handleToggleActive = (category) => {
+  const handleToggleActive = (branch) => {
     setModalVisible(true);
-    setCategoryToToggle(category);
+    setBranchToToggle(branch);
   };
 
   const confirmToggleActive = () => {
-    const updatedCategories = categories.map(category =>
-      category.name === categoryToToggle.name ? { ...category, isActive: !category.isActive } : category
+    const updatedBranches = branches.map(branch =>
+      branch.id === branchToToggle.id ? { ...branch, isActive: !branch.isActive } : branch
     );
-    setCategories(updatedCategories);
+    setBranches(updatedBranches);
     setModalVisible(false);
-    setCategoryToToggle(null);
+    setBranchToToggle(null);
   };
 
-  const filteredCategories = categories.filter(category =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredBranches = branches.filter(branch =>
+    branch.branchName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    branch.address.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalItems = filteredCategories.length;
+  const totalItems = filteredBranches.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const paginatedCategories = filteredCategories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const paginatedBranches = filteredBranches.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleDropdownChange = (e) => {
     const newItemsPerPage = Number(e.target.value);
@@ -75,28 +82,35 @@ const AddCategory = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Add Categories</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">Manage Branches</h2>
 
       <div className="mb-6 p-6 bg-blue-50 rounded-lg shadow-md">
-        <h3 className="text-2xl mb-4 text-gray-700">Add New Category</h3>
+        <h3 className="text-2xl mb-4 text-gray-700">Add New Branch</h3>
         <div className="flex flex-col md:flex-row gap-4">
           <input
             type="text"
-            placeholder="Category Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="p-3 border border-blue-300 rounded-lg shadow-sm flex-grow md:w-1/2"
+            placeholder="Branch Name"
+            value={branchName}
+            onChange={(e) => setBranchName(e.target.value)}
+            className="p-3 border border-blue-300 rounded-lg shadow-sm flex-grow"
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="p-3 border border-blue-300 rounded-lg shadow-sm flex-grow"
           />
           {editingIndex === null ? (
-            <button onClick={handleAddCategory} className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center">
-              <FaPlusCircle className="mr-2" /> Add Category
+            <button onClick={handleAddBranch} className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center">
+              <FaPlusCircle className="mr-2" /> Add Branch
             </button>
           ) : (
             <button onClick={handleSaveEdit} className="p-3 bg-green-600 text-white rounded-lg shadow-md flex items-center">
               Save
             </button>
           )}
-          <button onClick={() => { setName(''); setEditingIndex(null); }} className="p-3 bg-gray-400 text-white rounded-lg shadow-md">
+          <button onClick={() => { setBranchName(''); setAddress(''); setEditingIndex(null); }} className="p-3 bg-gray-400 text-white rounded-lg shadow-md">
             Reset
           </button>
         </div>
@@ -123,7 +137,7 @@ const AddCategory = () => {
         <div className="relative flex-grow">
           <input
             type="text"
-            placeholder="Search by Category Name"
+            placeholder="Search by Branch Name or Address"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="p-3 border border-blue-300 rounded-lg shadow-sm pl-10 w-full max-w-md"
@@ -137,28 +151,30 @@ const AddCategory = () => {
           <thead className="bg-blue-200">
             <tr>
               <th className="py-3 px-4 text-left text-gray-600">#</th>
-              <th className="py-3 px-4 text-left text-gray-600">Category Name</th>
+              <th className="py-3 px-4 text-left text-gray-600">Branch Name</th>
+              <th className="py-3 px-4 text-left text-gray-600">Address</th>
               <th className="py-3 px-4 text-left text-gray-600">Status</th>
               <th className="py-3 px-4 text-center text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedCategories.map((category, index) => (
-              <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
+            {paginatedBranches.map((branch, index) => (
+              <tr key={branch.id} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-200'}>
                 <td className="py-3 px-4 text-gray-700">{(currentPage - 1) * itemsPerPage + index + 1}</td>
-                <td className="py-3 px-4 text-gray-700">{category.name}</td>
-                <td className="py-3 px-4 text-gray-700">{category.isActive ? 'Active' : 'Deactive'}</td>
+                <td className="py-3 px-4 text-gray-700">{branch.branchName}</td>
+                <td className="py-3 px-4 text-gray-700">{branch.address}</td>
+                <td className="py-3 px-4 text-gray-700">{branch.isActive ? 'Active' : 'Inactive'}</td>
                 <td className="py-3 px-4 text-center flex items-center justify-center space-x-2">
                   <FaEdit
                     className="text-blue-500 cursor-pointer text-lg"
-                    onClick={() => handleEditCategory(categories.indexOf(category))}
+                    onClick={() => handleEditBranch(branches.indexOf(branch))}
                   />
                   <button
-                    className={`p-2 rounded-lg text-white ${category.isActive ? 'bg-green-500' : 'bg-red-500'}`}
-                    onClick={() => handleToggleActive(category)}
+                    className={`p-2 rounded-lg text-white ${branch.isActive ? 'bg-green-500' : 'bg-red-500'}`}
+                    onClick={() => handleToggleActive(branch)}
                     style={{ width: '100px' }}
                   >
-                    {category.isActive ? 'Activate' : 'Deactivate'}
+                    {branch.isActive ? 'Activate' : 'Deactivate'}
                   </button>
                 </td>
               </tr>
@@ -167,10 +183,10 @@ const AddCategory = () => {
         </table>
       </div>
 
-      <div className="mt-6 flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center space-x-4">
           <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage(currentPage - 1)}
             className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
             disabled={currentPage === 1}
           >
@@ -178,7 +194,7 @@ const AddCategory = () => {
             <span className="ml-2">Previous</span>
           </button>
           <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() => setCurrentPage(currentPage + 1)}
             className="p-3 bg-blue-600 text-white rounded-lg shadow-md flex items-center"
             disabled={currentPage === totalPages}
           >
@@ -189,33 +205,25 @@ const AddCategory = () => {
         <div className="flex items-center space-x-2">
           <span className="text-gray-600">Page {currentPage} of {totalPages}</span>
         </div>
-        <div className="flex items-center space-x-4">
-          {/* <button
-            className="p-3 bg-blue-600 text-white rounded-lg shadow-md"
-            disabled={currentPage === totalPages}
-          >
-            Show {dropdownValue}
-          </button> */}
-        </div>
       </div>
 
       {modalVisible && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-md">
             <h3 className="text-xl mb-4">Confirm Toggle Status</h3>
-            <p>Are you sure you want to {categoryToToggle.isActive ? 'deactivate' : 'activate'} the category "{categoryToToggle.name}"?</p>
+            <p>Are you sure you want to toggle the status of the branch "{branchToToggle?.branchName}"?</p>
             <div className="mt-4 flex justify-end gap-4">
               <button
-                onClick={confirmToggleActive}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Confirm
-              </button>
-              <button
                 onClick={() => setModalVisible(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                className="p-3 bg-gray-400 text-white rounded-lg shadow-md"
               >
                 Cancel
+              </button>
+              <button
+                onClick={confirmToggleActive}
+                className="p-3 bg-blue-600 text-white rounded-lg shadow-md"
+              >
+                Confirm
               </button>
             </div>
           </div>
@@ -225,4 +233,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default ManageBranch;

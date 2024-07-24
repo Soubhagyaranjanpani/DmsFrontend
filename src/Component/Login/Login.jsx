@@ -10,7 +10,7 @@ const LoginForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  const navigate = useNavigate(); // gfjfj
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     const { id, value } = e.target;

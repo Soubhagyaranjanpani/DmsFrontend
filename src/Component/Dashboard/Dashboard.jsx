@@ -4,10 +4,14 @@ import { RiAdminFill } from 'react-icons/ri';
 import AddBranch from './Master/AddBranch';  // Adjust the import path as needed
 import AddCategory from './Master/AddCategory';
 import AddDepartment from './Master/AddDepartment';
+import Managebranch from './setting/Managebranch';  // Import your settings components
+import Managecategory from './setting/Managecategory';    // Import your settings components
+import Managedepartment from './setting/Managedepartment'; // Import your privacy settings component
 
 const Dashboard = () => {
   const [active, setActive] = useState('Dashboard');
   const [isMasterOpen, setIsMasterOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const menuItems = [
     { name: 'Dashboard', icon: <FaUsers /> },
@@ -70,14 +74,37 @@ const Dashboard = () => {
         </div>
         <nav className="mb-4">
           <ul>
-            <li
-              key="Settings"
-              className={`p-4 flex items-center cursor-pointer ${active === 'Settings' ? 'bg-white text-maroon-600 rounded-lg mr-2' : 'hover:bg-maroon-700'}`}
-              onClick={() => setActive('Settings')}
-            >
-              <FaCog />
-              <span className="ml-3">Settings</span>
-            </li>
+            <div>
+              <li
+                className={`p-4 flex items-center cursor-pointer ${active === 'Settings' ? 'bg-white text-maroon-600 rounded-lg mr-2' : 'hover:bg-maroon-700'}`}
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+              >
+                <FaCog />
+                <span className="ml-3">Settings</span>
+              </li>
+              {isSettingsOpen && (
+                <ul className="ml-6 mt-2">
+                  <li
+                    className={`p-2 mt-2 flex items-center cursor-pointer rounded-lg mr-2 ${active === 'Manage Branch' ? 'bg-white text-maroon-600' : 'hover:bg-maroon-700'}`}
+                    onClick={() => setActive('Manage Branch')}
+                  >
+                    <span className="ml-3">Manage Branch</span>
+                  </li>
+                  <li
+                    className={`p-2 mt-2 flex items-center cursor-pointer rounded-lg mr-2 ${active === 'Manage Category' ? 'bg-white text-maroon-600' : 'hover:bg-maroon-700'}`}
+                    onClick={() => setActive('Manage Category')}
+                  >
+                    <span className="ml-3">Manage Category</span>
+                  </li>
+                  <li
+                    className={`p-2 mt-2 flex items-center cursor-pointer rounded-lg mr-2 ${active === 'Manage Department' ? 'bg-white text-maroon-600' : 'hover:bg-maroon-700'}`}
+                    onClick={() => setActive('Manage Department')}
+                  >
+                    <span className="ml-3">Manage Department</span>
+                  </li>
+                </ul>
+              )}
+            </div>
           </ul>
         </nav>
       </div>
@@ -85,6 +112,9 @@ const Dashboard = () => {
         {active === 'Add Branch' && <AddBranch />}
         {active === 'Add Category' && <AddCategory />}
         {active === 'Add Department' && <AddDepartment />}
+        {active === 'Manage Branch' && <Managebranch />}  {/* Render your settings components */}
+        {active === 'Manage Category' && <Managecategory />}    {/* Render your settings components */}
+        {active === 'Manage Department' && <Managedepartment />} {/* Render your privacy settings component */}
       </div>
     </div>
   );
